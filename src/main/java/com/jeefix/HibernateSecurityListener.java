@@ -18,7 +18,7 @@ public class HibernateSecurityListener implements PostLoadEventListener, PreUpda
     EntityManagerFactory entityManagerFactory;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         HibernateEntityManagerFactory hibernateEntityManagerFactory = (HibernateEntityManagerFactory) this.entityManagerFactory;
         SessionFactoryImpl sessionFactoryImpl = (SessionFactoryImpl) hibernateEntityManagerFactory.getSessionFactory();
         EventListenerRegistry registry = sessionFactoryImpl.getServiceRegistry().getService(EventListenerRegistry.class);

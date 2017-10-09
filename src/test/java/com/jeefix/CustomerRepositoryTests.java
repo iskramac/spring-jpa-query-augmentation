@@ -19,26 +19,45 @@ package com.jeefix;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
+import java.util.stream.StreamSupport;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@SpringBootTest
+@Import(Configuration.class)
 public class CustomerRepositoryTests {
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
-    private ManagedElementRepository customers;
+    private ManagedElementRepository meRepository;
+
+    @Autowired
+    private ConfigFileSetRepository cfsRepository;
 
     @Test
     public void testFindByLastName() {
-        ManagedElement managedElement = new ManagedElement("first", "last");
-        entityManager.persist(managedElement);
 
-//        List<ManagedElement> findByLastName = customers.findByLastName(managedElement.getMeType());
+        Iterable<ConfigFileSet> findAll = cfsRepository.findAll();
+        assertEquals(findAll.iterator().next().getName(), "SCHWEDEN1CFS");
+        assertEquals(StreamSupport.stream(findAll.spliterator(), false).count(), 1);
 
-//        assertThat(findByLastName).extracting(ManagedElement::getMeType).containsOnly(managedElement.getMeType());
+        Iterable<ConfigFileSet> findAllPredicate = cfsRepository.findAll(Arrays.asList(1l, 2l));
+        assertEquals(findAllPredicate.iterator().next().getName(), "SCHWEDEN1CFS");
+        assertEquals(StreamSupport.stream(findAllPredicate.spliterator(), false).count(), 1);
+
+        ConfigFileSet findByName = cfsRepository.findByName("SCHWEDEN1CFS");
+        assertNotNull(findByName);
+        assertEquals(findByName.getName(), "SCHWEDEN1CFS");
+        findByName = cfsRepository.findByName("SCHWEDEN2CFS");
+        assertNull(findByName);
+
+
     }
 }

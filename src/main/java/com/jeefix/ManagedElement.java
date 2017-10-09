@@ -2,22 +2,20 @@
 package com.jeefix;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class ManagedElement {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private String meName;
     private String meType;
 
     protected ManagedElement() {}
 
-    public ManagedElement(String meName, String meType) {
+    public ManagedElement(Long id,String meName, String meType) {
+        this.id = id;
         this.meName = meName;
         this.meType = meType;
     }

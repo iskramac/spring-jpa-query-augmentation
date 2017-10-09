@@ -9,6 +9,8 @@
  */
 package com.jeefix;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
@@ -19,7 +21,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //TODO emacisk write unit tests
 //TODO emacisk add logging
 @org.springframework.context.annotation.Configuration
+@EnableAspectJAutoProxy
+@ComponentScan("sample.aop")
 @EnableJpaRepositories(value = "com.jeefix",
         repositoryFactoryBeanClass = CustomSpringJpaRepositoryFactoryBean.class)
 public class Configuration {
+
 }

@@ -9,8 +9,6 @@
  */
 package com.jeefix;
 
-import org.hibernate.jpa.criteria.CriteriaBuilderImpl;
-import org.hibernate.jpa.criteria.CriteriaQueryImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.CrudMethodMetadata;
@@ -26,7 +24,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
@@ -71,19 +68,29 @@ public class CustomSpringJpaRepository<T, ID extends Serializable>
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<S> query = builder.createQuery(domainClass);
 
-        Root<S> root = applySpecificationToCriteria(spec, domainClass, query);
-        query.select(root);
-//-----
-        root.fetch("managedElement", JoinType.INNER);
-        ((CriteriaQueryImpl) query).where(((CriteriaBuilderImpl) builder)
-                .in(root.get("managedElement").get("meName"), "SCHWEDEN1"));
+
+        //-----
+        Specification<S> restrictionSpec = new Specification<S>() {
+
+            @Override
+            public Predicate toPredicate(Root<S> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Predicate restrictionPredicate = root.get("managedElement").get("meName").in("SCHWEDEN1");
+
+                return spec != null ? cb.and(spec.toPredicate(root, query, cb), restrictionPredicate) :restrictionPredicate;
+            }
+
+        };
 
 //-----
+        Root<S> root = applySpecificationToCriteria(restrictionSpec, domainClass, query);
+        query.select(root);
+
         if (sort != null) {
             query.orderBy(toOrders(sort, root, builder));
         }
-
         TypedQuery<S> sTypedQuery = applyRepositoryMethodMetadata(em.createQuery(query));
+
+
         return sTypedQuery;
     }
 
