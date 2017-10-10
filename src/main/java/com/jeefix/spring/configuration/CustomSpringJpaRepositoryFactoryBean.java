@@ -7,13 +7,10 @@
  * WRITTEN AGREEMENT SIGNED BY AN AUTHORIZED PERSON OF Ericsson GmbH.
  *
  */
-package com.jeefix;
+package com.jeefix.spring.configuration;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
 import javax.persistence.EntityManager;
@@ -45,29 +42,7 @@ public class CustomSpringJpaRepositoryFactoryBean<T extends JpaRepository<S, ID>
      */
     protected RepositoryFactorySupport createRepositoryFactory(
             EntityManager entityManager) {
-
-        return new DefaultRepositoryFactory(entityManager);
-    }
-}
-
-
-/**
- * The purpose of this class is to override the default behaviour of the spring JpaRepositoryFactory class.
- * It will produce a GenericRepositoryImpl object instead of SimpleJpaRepository.
- */
-class DefaultRepositoryFactory extends JpaRepositoryFactory {
-
-    private EntityManager entityManager;
-
-    public DefaultRepositoryFactory(EntityManager entityManager) {
-        super(entityManager);
-        this.entityManager = entityManager;
+        return new CustomRepositoryFactory(entityManager);
     }
 
-    @Override
-    protected Object getTargetRepository(RepositoryInformation information) {
-        JpaEntityInformation entityInformation =
-                getEntityInformation(information.getDomainType());
-        return new CustomSpringJpaRepository<>(entityInformation, entityManager);
-    }
 }

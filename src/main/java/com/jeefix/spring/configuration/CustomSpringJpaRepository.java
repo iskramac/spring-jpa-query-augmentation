@@ -7,8 +7,9 @@
  * WRITTEN AGREEMENT SIGNED BY AN AUTHORIZED PERSON OF Ericsson GmbH.
  *
  */
-package com.jeefix;
+package com.jeefix.spring.configuration;
 
+import com.jeefix.jpa.acl.AclSpecification;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.CrudMethodMetadata;
@@ -32,14 +33,14 @@ import java.util.Map;
 import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 
 /**
- * TODO write class description here
+ * asdasd
  * <p>
  * Created by Maciej Iskra (emacisk) on 2017-10-05.
  */
 
 @NoRepositoryBean
-public class CustomSpringJpaRepository<T, ID extends Serializable>
-        extends SimpleJpaRepository<T, ID> implements Repository<T, ID>, Serializable {
+
+public class CustomSpringJpaRepository<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements Repository<T, ID>, Serializable {
 
     private EntityManager em;
     private CrudMethodMetadata metadata;
@@ -70,16 +71,7 @@ public class CustomSpringJpaRepository<T, ID extends Serializable>
 
 
         //-----
-        Specification<S> restrictionSpec = new Specification<S>() {
-
-            @Override
-            public Predicate toPredicate(Root<S> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Predicate restrictionPredicate = root.get("managedElement").get("meName").in("SCHWEDEN1");
-
-                return spec != null ? cb.and(spec.toPredicate(root, query, cb), restrictionPredicate) :restrictionPredicate;
-            }
-
-        };
+        Specification<S> restrictionSpec = new AclSpecification<>(spec);
 
 //-----
         Root<S> root = applySpecificationToCriteria(restrictionSpec, domainClass, query);

@@ -1,7 +1,6 @@
-package com.jeefix;
+package com.jeefix.jpa.repository;
 
-import org.hibernate.engine.spi.Managed;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.jeefix.jpa.entity.ConfigFileSet;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

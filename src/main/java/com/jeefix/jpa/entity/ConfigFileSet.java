@@ -1,5 +1,5 @@
 // tag::sample[]
-package com.jeefix;
+package com.jeefix.jpa.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

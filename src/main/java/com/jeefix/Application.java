@@ -1,5 +1,9 @@
 package com.jeefix;
 
+import com.jeefix.jpa.entity.ConfigFileSet;
+import com.jeefix.jpa.entity.ManagedElement;
+import com.jeefix.jpa.repository.ConfigFileSetRepository;
+import com.jeefix.jpa.repository.ManagedElementRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
