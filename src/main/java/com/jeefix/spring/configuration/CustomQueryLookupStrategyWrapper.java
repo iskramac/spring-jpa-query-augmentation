@@ -9,6 +9,9 @@
  */
 package com.jeefix.spring.configuration;
 
+import org.springframework.data.jpa.provider.PersistenceProvider;
+import org.springframework.data.jpa.repository.query.CustomPartTreeJpaQuery;
+import org.springframework.data.jpa.repository.query.JpaQueryMethod;
 import org.springframework.data.jpa.repository.query.PartTreeJpaQuery;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
@@ -41,13 +44,14 @@ public class CustomQueryLookupStrategyWrapper implements QueryLookupStrategy {
 
 
         RepositoryQuery query = queryLookupStrategy.resolveQuery(method, metadata, factory, namedQueries);
-        return wrapQuery(method,metadata,query);
+        return wrapQuery(method,metadata,factory,query);
     }
     private RepositoryQuery wrapQuery(Method method, RepositoryMetadata metadata,
-                                      RepositoryQuery query) {
+                                      ProjectionFactory factory, RepositoryQuery query) {
 
         if (query instanceof PartTreeJpaQuery) {
-            query = new CustomJpaQuery(method, query, metadata.getDomainType(), em);
+            JpaQueryMethod queryMethod = new JpaQueryMethod(method, metadata, factory, PersistenceProvider.fromEntityManager(em));
+            return new CustomPartTreeJpaQuery(queryMethod, em, PersistenceProvider.fromEntityManager(em));
         }
         return query;
     }

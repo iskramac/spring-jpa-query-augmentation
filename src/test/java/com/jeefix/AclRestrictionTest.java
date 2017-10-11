@@ -18,7 +18,7 @@ package com.jeefix;
 
 import com.jeefix.jpa.entity.ConfigFileSet;
 import com.jeefix.jpa.repository.ConfigFileSetRepository;
-import com.jeefix.jpa.repository.ManagedElementRepository;
+import com.jeefix.secuturity.SecurityContext;
 import com.jeefix.spring.configuration.Configuration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +27,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
+import java.util.stream.StreamSupport;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -34,30 +37,37 @@ import static org.junit.Assert.assertNull;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Import(Configuration.class)
-public class CustomerRepositoryTests {
+public class AclRestrictionTest {
 
-    @Autowired
-    private ManagedElementRepository meRepository;
 
     @Autowired
     private ConfigFileSetRepository cfsRepository;
 
     @Test
     public void testFindByLastName() {
+        SecurityContext.setRoles(Arrays.asList("SCHWEDEN1"));
+        Iterable<ConfigFileSet> findAll = cfsRepository.findAll();
+        assertEquals(findAll.iterator().next().getName(), "SCHWEDEN1CFS");
+        assertEquals(StreamSupport.stream(findAll.spliterator(), false).count(), 1);
 
-//        Iterable<ConfigFileSet> findAll = cfsRepository.findAll();
-//        assertEquals(findAll.iterator().next().getName(), "SCHWEDEN1CFS");
-//        assertEquals(StreamSupport.stream(findAll.spliterator(), false).count(), 1);
-//
-//        Iterable<ConfigFileSet> findAllPredicate = cfsRepository.findAll(Arrays.asList(1l, 2l));
-//        assertEquals(findAllPredicate.iterator().next().getName(), "SCHWEDEN1CFS");
-//        assertEquals(StreamSupport.stream(findAllPredicate.spliterator(), false).count(), 1);
+        Iterable<ConfigFileSet> findAllPredicate = cfsRepository.findAll(Arrays.asList(1l, 2l));
+        assertEquals(findAllPredicate.iterator().next().getName(), "SCHWEDEN1CFS");
+        assertEquals(StreamSupport.stream(findAllPredicate.spliterator(), false).count(), 1);
 
         ConfigFileSet findByName = cfsRepository.findByName("SCHWEDEN1CFS");
         assertNotNull(findByName);
         assertEquals(findByName.getName(), "SCHWEDEN1CFS");
         findByName = cfsRepository.findByName("SCHWEDEN2CFS");
         assertNull(findByName);
+
+        SecurityContext.setRoles(Arrays.asList("SCHWEDEN1", "SCHWEDEN2"));
+
+        findAll = cfsRepository.findAll();
+        assertEquals(StreamSupport.stream(findAll.spliterator(), false).count(), 2);
+
+        findByName = cfsRepository.findByName("SCHWEDEN2CFS");
+        assertNotNull(findByName);
+        assertEquals(findByName.getName(), "SCHWEDEN2CFS");
 
 
     }
