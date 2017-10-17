@@ -1,6 +1,7 @@
 package com.jeefix.jpa.repository;
 
 import com.jeefix.jpa.entity.ConfigFileSet;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -15,9 +16,11 @@ public interface ConfigFileSetRepository extends CrudRepository<ConfigFileSet, L
     List<ConfigFileSet> findByQuery();
 
 
-    ConfigFileSet findByName(String name);
+    List<ConfigFileSet> findByName(String name);
 
-    List<ConfigFileSet> findByName(@Param("name") String name, Pageable pageable);
+    Page<ConfigFileSet> findByName(@Param("name") String name, Pageable pageable);
+
+
 
 
 }

@@ -1,6 +1,8 @@
 // tag::sample[]
 package com.jeefix.jpa.entity;
 
+import com.jeefix.jpa.acl.ManagedElementRestricted;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 @Entity
+@ManagedElementRestricted("managedElement.meName")
 public class ConfigFileSet {
 
     @Id

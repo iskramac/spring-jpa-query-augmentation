@@ -9,6 +9,8 @@
  */
 package com.jeefix.secuturity;
 
+import java.util.List;
+
 /**
  * TODO write class description here
  * <p>
@@ -17,4 +19,13 @@ package com.jeefix.secuturity;
 //TODO emacisk write unit tests
 //TODO emacisk add logging
 public class SecurityContext {
+    private static List<String> roles;
+
+    public static List<String> getRoles() {
+        return roles;
+    }
+
+    public static void setRoles(List<String> roles) {
+        SecurityContext.roles = roles;
+    }
 }

@@ -7,11 +7,10 @@
  * WRITTEN AGREEMENT SIGNED BY AN AUTHORIZED PERSON OF Ericsson GmbH.
  *
  */
-package com.jeefix.spring.configuration;
+package com.jeefix.jpa.acl;
 
-import org.springframework.data.jpa.provider.PersistenceProvider;
-import org.springframework.data.jpa.repository.query.CustomPartTreeJpaQuery;
-import org.springframework.data.jpa.repository.query.JpaQueryMethod;
+
+import com.jeefix.jpa.acl.enhancer.QueryEnhancer;
 import org.springframework.data.jpa.repository.query.PartTreeJpaQuery;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
@@ -29,12 +28,12 @@ import java.lang.reflect.Method;
  */
 //TODO emacisk write unit tests
 //TODO emacisk add logging
-public class CustomQueryLookupStrategyWrapper implements QueryLookupStrategy {
+public class AclQueryLookupStrategyWrapper implements QueryLookupStrategy {
 
     private final QueryLookupStrategy queryLookupStrategy;
     private final EntityManager em;
 
-    public CustomQueryLookupStrategyWrapper(QueryLookupStrategy original, EntityManager em) {
+    public AclQueryLookupStrategyWrapper(QueryLookupStrategy original, EntityManager em) {
         this.queryLookupStrategy = original;
         this.em = em;
     }
@@ -42,17 +41,16 @@ public class CustomQueryLookupStrategyWrapper implements QueryLookupStrategy {
     @Override
     public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory, NamedQueries namedQueries) {
 
-
         RepositoryQuery query = queryLookupStrategy.resolveQuery(method, metadata, factory, namedQueries);
-        return wrapQuery(method,metadata,factory,query);
-    }
-    private RepositoryQuery wrapQuery(Method method, RepositoryMetadata metadata,
-                                      ProjectionFactory factory, RepositoryQuery query) {
-
         if (query instanceof PartTreeJpaQuery) {
-            JpaQueryMethod queryMethod = new JpaQueryMethod(method, metadata, factory, PersistenceProvider.fromEntityManager(em));
-            return new CustomPartTreeJpaQuery(queryMethod, em, PersistenceProvider.fromEntityManager(em));
+
+            query = QueryEnhancer.enhanceQuery(em, metadata, factory, (PartTreeJpaQuery)query);
+        }else{
+            //TODO log
         }
+
         return query;
     }
+
+
 }
